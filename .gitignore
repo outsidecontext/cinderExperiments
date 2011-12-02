@@ -1,0 +1,12 @@
+*.mode1v3
+*.pbxuser
+xcuserdata
+build/
+obj/
+*.o
+
+#linux temporary files
+*~
+
+#Mac OS X
+.DS_Store
