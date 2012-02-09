@@ -23,9 +23,9 @@ using namespace std;
 void Cell::setup()
 {
     // totally random colour
-    r = Rand::randFloat();
-    g = Rand::randFloat();
-    b = Rand::randFloat();
+    colour.r = Rand::randFloat();
+    colour.g = Rand::randFloat();
+    colour.b = Rand::randFloat();
 }
 
 
@@ -66,7 +66,7 @@ void Cell::updateState()
 
 void Cell::draw()
 {
-    gl::color(r*brightness, g*brightness, b*brightness);
+    gl::color(colour.r*brightness, colour.g*brightness, colour.b*brightness);
     Rectf rect( x, y, x+life, y + life );
     rect.offsetCenterTo(Vec2f(x,y));
     gl::drawSolidRect( rect );

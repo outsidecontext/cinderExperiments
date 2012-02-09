@@ -1,6 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
+#include "cinder/params/Params.h"
 
 #include "Cell.h"
 
@@ -14,7 +15,10 @@ using namespace std;
 class gameOfLifeApp : public AppBasic {
   public:
     
-    // max cell count
+    // params gui
+    params::InterfaceGl mParams;
+    
+    // cells
     Cell cellsXY[MAX_X_CELLS][MAX_Y_CELLS];
     // cell dimensions
     float cellHeight;
@@ -22,9 +26,12 @@ class gameOfLifeApp : public AppBasic {
     // x/y max
     int maxx;
     int maxy;
+    // override cell colour
+    ColorA colour;
     
     void prepareSettings( Settings *settings );
 	void setup();
+    void setupCells();
     void keyDown( KeyEvent event );
 	void mouseDown( MouseEvent event );	
 	void update();
@@ -43,10 +50,27 @@ void gameOfLifeApp::prepareSettings( Settings *settings )
 
 void gameOfLifeApp::setup()
 {
-    // 10 x 10 cells
+    
+    // defaults
     cellHeight = 10;
     cellWidth = 10;
     
+    // Setup the parameters
+	mParams = params::InterfaceGl( "App parameters", Vec2i( 200, 400 ) );
+	mParams.addParam( "cell height", &cellHeight, "min=5 max=50 step=1 keyIncr=a keyDecr=A" );
+	mParams.addParam( "cell width", &cellWidth, "min=5 max=50 step=1 keyIncr=z keyDecr=Z" );
+	mParams.addButton( "restart", std::bind( &gameOfLifeApp::setupCells, this ) );
+	mParams.addParam( "color", &colour, "" );	
+    /*
+	mParams.addText( "text", "label=`This is a label without a parameter.`" );
+	mParams.addParam( "String ", &mString, "" );
+     */
+    
+    setupCells();
+}
+
+void gameOfLifeApp::setupCells()
+{
     // set max based on current window dimensions and cell dimensions
     maxx = (int)(getWindowWidth() / cellWidth);
     maxy = (int)(getWindowHeight() / cellHeight);
@@ -74,12 +98,12 @@ void gameOfLifeApp::setup()
     }
     
     /*
-    // Specific starting patterns...
-    cellsXY[10][10].isAlive = cellsXY[10][10].nextIsAlive = true;
-    cellsXY[11][10].isAlive = cellsXY[11][10].nextIsAlive = true;
-    cellsXY[12][10].isAlive = cellsXY[12][10].nextIsAlive = true;
-    cellsXY[11][9].isAlive = cellsXY[11][9].nextIsAlive = true;
-    cellsXY[12][11].isAlive = cellsXY[12][11].nextIsAlive = true;
+     // Specific starting patterns...
+     cellsXY[10][10].isAlive = cellsXY[10][10].nextIsAlive = true;
+     cellsXY[11][10].isAlive = cellsXY[11][10].nextIsAlive = true;
+     cellsXY[12][10].isAlive = cellsXY[12][10].nextIsAlive = true;
+     cellsXY[11][9].isAlive = cellsXY[11][9].nextIsAlive = true;
+     cellsXY[12][11].isAlive = cellsXY[12][11].nextIsAlive = true;
      */
     
     // add neighbour pointers
@@ -116,11 +140,10 @@ void gameOfLifeApp::setup()
     }
 }
 
-
 void gameOfLifeApp::mouseDown( MouseEvent event )
 {
     // restart
-    setup();
+    setupCells();
 }
 
 
@@ -130,6 +153,7 @@ void gameOfLifeApp::update()
     for (int x=0; x<maxx && x<MAX_X_CELLS; x++) {
         for (int y=0; y<maxy && x<MAX_Y_CELLS; y++) {
             Cell& cell = cellsXY[x][y];
+            cell.colour = cell.colour.lerp(0.5, colour);
             cell.updateState();
         }
     }
@@ -156,6 +180,8 @@ void gameOfLifeApp::draw()
     
     gl::popMatrices();
     
+    // Draw the interface
+	params::InterfaceGl::draw();
 }
 
 

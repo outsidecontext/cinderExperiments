@@ -22,7 +22,7 @@ public:
     
     float x,y;
     float life;
-    float r,g,b;
+    cinder::ColorA colour;
     float brightness;
     
     vector<Cell*> neighbours;
