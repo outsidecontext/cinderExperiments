@@ -165,6 +165,10 @@ void gameOfLifeApp::draw()
     // bg colour
     gl::clear( Color( 0.2, 0.2, 0.2 ) );
     
+    
+    // Draw the interface
+	params::InterfaceGl::draw();
+    
     // nudge in
     gl::pushMatrices();
     gl::translate(cellWidth*.5, cellHeight*.5);
@@ -180,8 +184,6 @@ void gameOfLifeApp::draw()
     
     gl::popMatrices();
     
-    // Draw the interface
-	params::InterfaceGl::draw();
 }
 
 
